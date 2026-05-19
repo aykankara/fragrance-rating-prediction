@@ -25,22 +25,6 @@ Dataset
 File: `fra_cleaned.csv`
 Source: Fragrantica.com — the world's largest online fragrance encyclopedia and community.
 Size: ~24,000 perfume entries
-Columns:
-Column	Description
-`url`	Fragrantica page URL of the perfume
-`Perfume`	Perfume name (slug format)
-`Brand`	Brand name
-`Country`	Country of origin
-`Gender`	Target gender (men / women / unisex)
-`Rating Value`	Average user rating (1.0 – 5.0) ← target variable
-`Rating Count`	Number of user ratings
-`Year`	Year of release
-`Top`	Top notes (comma-separated)
-`Middle`	Middle / heart notes
-`Base`	Base notes (comma-separated)
-`Perfumer1`	Primary perfumer
-`Perfumer2`	Secondary perfumer
-`mainaccord1–5`	Main scent accords (e.g., woody, citrus, floral)
 ---
 Project Structure
 ```
@@ -85,25 +69,6 @@ Data Preprocessing
 Missing values: Columns with more than 40% missing data are dropped; remaining gaps are filled with the median (numerical) or mode (categorical).
 Outlier removal: IQR method applied to `Rating Value`; entries outside 1.5×IQR bounds are removed.
 Encoding: `Rating Value` decimal separator normalized from comma to period.
-Feature Engineering
-The model uses three input signals:
-Feature	Encoding Method
-Top notes (`Top`)	TF-IDF Vectorizer (max 200 features)
-Base notes (`Base`)	TF-IDF Vectorizer (max 200 features)
-Brand	Label Encoding → sparse matrix column
-All three are horizontally stacked into a single sparse feature matrix using `scipy.sparse.hstack`.
-Models Trained
-Three regression models are trained and evaluated on an 80/20 train-test split:
-Model	Notes
-Linear Regression	Baseline
-Ridge Regression	L2 regularization (α = 1.0)
-Lasso Regression	L1 regularization (α = 0.01)
-The best model (by R² score on the test set) is automatically selected and saved as `model.pkl`.
-Evaluation Metrics:
-MAE (Mean Absolute Error) — average prediction error in rating points
-RMSE (Root Mean Squared Error) — penalizes large errors more heavily
-R² (Coefficient of Determination) — proportion of variance explained
----
 GUI Application
 `final.py` is a standalone Tkinter desktop app that loads the saved model and encoders, and lets users get instant predictions.
 Screenshot preview:
@@ -128,7 +93,7 @@ The predicted score is clamped to the [1.0, 5.0] range
 Installation
 1. Clone the repository
 ```bash
-git clone https://github.com/your-username/fragrance-rating-prediction.git
+git clone https://github.com/aykankara/fragrance-rating-prediction.git
 cd fragrance-rating-prediction
 ```
 2. Create a virtual environment (recommended)
@@ -169,16 +134,6 @@ MAE values below 0.5 are considered acceptable on a 5-point scale.
 RMSE slightly higher than MAE indicates occasional larger prediction errors, as expected for subjective user ratings.
 R² reflects that top/base notes and brand are meaningful but not exhaustive predictors; future work could incorporate middle notes, accord data, and release year.
 ---
-Dependencies
-Library	Purpose
-`pandas`	Data loading and manipulation
-`numpy`	Numerical operations
-`scikit-learn`	TF-IDF, Label Encoding, regression models, metrics
-`scipy`	Sparse matrix operations, Z-score outlier detection
-`joblib`	Model serialization (save/load `.pkl` files)
-`matplotlib`	Plotting backend
-`seaborn`	Statistical visualizations
-`tkinter`	GUI framework (included in Python standard library)
 ---
 License
 This project was developed as a university course assignment and is shared for educational purposes.
